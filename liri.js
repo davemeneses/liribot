@@ -41,6 +41,9 @@ if (command == "movie-this" && userInput) {
 }
 
 function movieThis() {
+  if (!searchTerm) {
+    searchTerm = "Mr Nobody";
+  }
   axios
     .get(
       "http://www.omdbapi.com/?t=" +
@@ -76,6 +79,7 @@ function concertThis() {
         searchTerm +
         "/events?app_id=codingbootcamp"
     )
+
     .then(function(response) {
       for (i = 0; i < 3; i++)
         console.log(
@@ -92,6 +96,9 @@ function concertThis() {
 
 function spotifyThis() {
   // searchTerm.toString
+  if (!searchTerm) {
+    searchTerm = "The Sign ace of base";
+  }
   spotify.search({ type: "track", query: searchTerm }, function(err, data) {
     if (err) {
       return console.log("Error occurred: " + err);
