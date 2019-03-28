@@ -40,3 +40,9 @@ You will be typing all commands into the command line and all results will be di
 6. Lastly, when a user types in "node liri.js do-what-it-says" it pulls up the spotify-this-song information for the song I Want It That Way by the backstreet boys. This information is stored in the random.txt file and if grabbed using the fs node package.
 
 ![Alt Text](./assets/liri4.gif)
+
+Liri is a great tool to quickly find basic information on musicians, actors, movies, songs, and concerts. PLease use it to help you find information quickly for your favorite things!
+
+## Author
+
+David Meneses
