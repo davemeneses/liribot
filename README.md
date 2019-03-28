@@ -2,7 +2,7 @@
 
 Liri is a Language Interpretation and Recognition Interface. It takes in parameters in the command line from the user and gives data back.
 
-##T he commands that Liri can recognize are:
+## The commands that Liri can recognize are:
 
 - concert-this
 - spotify-this-song
