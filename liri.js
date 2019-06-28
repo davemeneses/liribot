@@ -7,7 +7,7 @@ const axios = require("axios");
 const spotify = new Spotify(keys.spotify);
 
 // this saves what command the user is typing
-let command = process.argv[2];
+let command = process.argv[2].toString().toLowerCase();
 // this checks what information the user is providing.
 let mediaInfo = process.argv.slice(3).join(" ");
 
@@ -31,10 +31,121 @@ const liriStart = (command, mediaInfo) => {
       break;
     default:
       console.log(
-        "\nACCEPTED COMMANDS: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
+        "\nRecognized Commands: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
       );
   }
 };
+
+const movieThis = mediaInfo => {
+  // condition ? value if true : value if false
+  !mediaInfo
+    ? (console.log(
+        "\nI see you didn't include a movie to search. Here's my favorite movie:\n"
+      ),
+      (mediaInfo = "Way of the Samurai"))
+    : mediaInfo;
+
+  axios
+    .get(
+      "http://www.omdbapi.com/?t=" + mediaInfo + "&y=&plot=short&apikey=trilogy"
+    )
+    .then(function(response) {
+      let movie = response.data;
+      console.log(
+        "\nTitle: " +
+          movie.Title +
+          "\n" +
+          "\nRelease Year: " +
+          movie.Year +
+          "\nIMDB Rating: " +
+          movie.imdbRating +
+          "\nRotten Tomatoes Rating: " +
+          movie.Ratings[1].Value +
+          "\nLocation: " +
+          movie.Country +
+          "\nLanguage: " +
+          movie.Language +
+          "\nCast: " +
+          movie.Actors +
+          "\n" +
+          "\nSynopsis: " +
+          movie.Plot +
+          "\n"
+      );
+    });
+};
+
+// condition ? value if true : value if false
+
+const concertThis = mediaInfo => {
+  !mediaInfo
+    ? console.log(
+        "\nPlease enter the name of an artist you would like to search for.\n"
+      )
+    : axios
+        .get(
+          "https://rest.bandsintown.com/artists/" +
+            mediaInfo +
+            "/events?app_id=codingbootcamp"
+        )
+
+        .then(function(response) {
+          let shows = response.data;
+          for (i = 0; i < 3; i++)
+            console.log(
+              "Venue: " +
+                shows[i].venue.name +
+                "\nLocation: " +
+                shows[i].venue.city +
+                "\nDate: " +
+                moment(shows[i].datetime).format("MM/DD/YYYY") +
+                "\n"
+            );
+        });
+};
+
+function spotifyThis(mediaInfo) {
+  !mediaInfo && (mediaInfo = "Good Day Nappy Roots"),
+    console.log(
+      "\nI see you didn't choose a song. Here's one of my favorites: \n"
+    );
+  // searchTerm.toString
+
+  spotify.search({ type: "track", query: mediaInfo }, function(err, data) {
+    if (err) {
+      return console.log("Error occurred: " + err);
+    }
+
+    console.log(
+      "Artist: " +
+        data.tracks.items[0].artists[0].name +
+        "\nSong: " +
+        data.tracks.items[0].name +
+        "\nAlbum: " +
+        data.tracks.items[0].album.name +
+        "\nPreview: " +
+        data.tracks.items[0].preview_url +
+        "\n"
+    );
+
+    // console.log(data.tracks.items[0]);
+  });
+}
+
+// condition ? value if true : value if false
+
+const doWhatItSays = () => {
+  fs.readFile("random.txt", "utf8", function(err, data) {
+    err && console.log("Error! " + err);
+
+    let randomThing = data.split(",");
+    mediaInfo = randomThing[1];
+    console.log("THE UNIVERSE GRANTS YOU -- \n");
+    spotifyThis(mediaInfo);
+  });
+};
+
+liriStart(command, mediaInfo);
 
 // if (command == "movie-this" && userInput) {
 //   console.log("MOVIE: " + printed + "\n");
@@ -47,98 +158,3 @@ const liriStart = (command, mediaInfo) => {
 // } else if (command == "do-what-it-says" && userInput) {
 //   doWhatItSays();
 // }
-
-const movieThis = mediaInfo => {
-  if (!mediaInfo) {
-    mediaInfo = "Ghost Dog Way of the Samurai";
-    console.log(
-      "\nI see you didn't include a movie title. Here's my favorite movie:\n"
-    );
-  }
-  axios
-    .get(
-      "http://www.omdbapi.com/?t=" + mediaInfo + "&y=&plot=short&apikey=trilogy"
-    )
-    .then(function(movie) {
-      let movie = response.data;
-      console.log(
-        "\nTitle: " +
-          movie.Title +
-          "\nRelease Year: " +
-          movie.Year +
-          "\nIMDB Rating: " +
-          movie.imdbRating +
-          "\nRotten Tomatoes Rating: " +
-          movie.Ratings[1].Value +
-          "\nLocation: " +
-          movie.Country +
-          "\nLanguage: " +
-          movie.Language +
-          "\nPlot: " +
-          movie.Plot +
-          "\nCast: " +
-          movie.Actors
-      );
-    });
-};
-
-function concertThis() {
-  axios
-    .get(
-      "https://rest.bandsintown.com/artists/" +
-        searchTerm +
-        "/events?app_id=codingbootcamp"
-    )
-
-    .then(function(response) {
-      for (i = 0; i < 3; i++)
-        console.log(
-          "VENUE: " +
-            response.data[i].venue.name +
-            "\nLOCATION: " +
-            response.data[i].venue.city +
-            "\nDATE: " +
-            moment(response.data[i].datetime).format("MM/DD/YYYY") +
-            "\n"
-        );
-    });
-}
-
-function spotifyThis() {
-  // searchTerm.toString
-  if (!searchTerm) {
-    searchTerm = "The Sign Ace of Base";
-  }
-  spotify.search({ type: "track", query: searchTerm }, function(err, data) {
-    if (err) {
-      return console.log("Error occurred: " + err);
-    }
-
-    console.log(
-      "ARTIST: " +
-        data.tracks.items[0].artists[0].name +
-        "\nSONG: " +
-        data.tracks.items[0].name +
-        "\nALBUM: " +
-        data.tracks.items[0].album.name +
-        "\nPREVIEW: " +
-        data.tracks.items[0].preview_url +
-        "\n"
-    );
-  });
-}
-
-function doWhatItSays() {
-  fs.readFile("random.txt", "utf8", function(err, data) {
-    if (err) {
-      console.log("Error! " + err);
-    }
-
-    var randomThing = data.split(",");
-    searchTerm = randomThing[1];
-    console.log("THE UNIVERSE GRANTS YOU -- \n");
-    spotifyThis();
-  });
-}
-
-liriStart(command, mediaInfo);
