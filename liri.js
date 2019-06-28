@@ -1,44 +1,52 @@
 require("dotenv").config();
-var fs = require("fs");
-var keys = require("./keys");
-var moment = require("moment");
-var Spotify = require("node-spotify-api");
-var axios = require("axios");
-var spotify = new Spotify(keys.spotify);
-var userInput = "";
-userInput = process.argv;
-var command = process.argv[2];
-var printed = "";
-var searchTerm = "";
+const fs = require("fs");
+const keys = require("./keys");
+const moment = require("moment");
+const Spotify = require("node-spotify-api");
+const axios = require("axios");
+const spotify = new Spotify(keys.spotify);
 
-console.log(
-  "\nACCEPTED COMMANDS: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
-);
+// this saves what command the user is typing
+let command = process.argv[2];
+// this checks what information the user is providing.
+let mediaInfo = process.argv.slice(3).join(" ");
 
-for (var i = 3; i < userInput.length; i++) {
-  printed = printed + " " + userInput[i];
-}
+// console.log(
+//   "\nACCEPTED COMMANDS: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
+// );
 
-// Creating the search term
-for (var i = 3; i < userInput.length; i++) {
-  if (i > 3 && i < userInput.length) {
-    searchTerm = searchTerm + "+" + userInput[i];
-  } else {
-    searchTerm += userInput[i];
+const liriStart = (command, mediaInfo) => {
+  switch (command) {
+    case "movie-this":
+      movieThis(mediaInfo);
+      break;
+    case "concert-this":
+      concertThis(mediaInfo);
+      break;
+    case "spotify-this-song":
+      spotifyThis(mediaInfo);
+      break;
+    case "do-what-it-says":
+      spotifyThis(mediaInfo);
+      break;
+    default:
+      console.log(
+        "\nACCEPTED COMMANDS: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
+      );
   }
-}
+};
 
-if (command == "movie-this" && userInput) {
-  console.log("MOVIE: " + printed + "\n");
-  movieThis();
-} else if (command == "concert-this" && userInput) {
-  console.log("ARTIST: " + printed + "\n");
-  concertThis();
-} else if (command == "spotify-this-song" && userInput) {
-  spotifyThis();
-} else if (command == "do-what-it-says" && userInput) {
-  doWhatItSays();
-}
+// if (command == "movie-this" && userInput) {
+//   console.log("MOVIE: " + printed + "\n");
+//   movieThis();
+// } else if (command == "concert-this" && userInput) {
+//   console.log("ARTIST: " + printed + "\n");
+//   concertThis();
+// } else if (command == "spotify-this-song" && userInput) {
+//   spotifyThis();
+// } else if (command == "do-what-it-says" && userInput) {
+//   doWhatItSays();
+// }
 
 function movieThis() {
   if (!searchTerm) {
@@ -97,7 +105,7 @@ function concertThis() {
 function spotifyThis() {
   // searchTerm.toString
   if (!searchTerm) {
-    searchTerm = "The Sign ace of base";
+    searchTerm = "The Sign Ace of Base";
   }
   spotify.search({ type: "track", query: searchTerm }, function(err, data) {
     if (err) {
@@ -130,3 +138,5 @@ function doWhatItSays() {
     spotifyThis();
   });
 }
+
+liriStart(command, mediaInfo);
