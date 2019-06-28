@@ -7,7 +7,7 @@ const axios = require("axios");
 const spotify = new Spotify(keys.spotify);
 
 // this saves what command the user is typing
-let command = process.argv[2].toString().toLowerCase();
+let command = process.argv[2];
 // this checks what information the user is providing.
 let mediaInfo = process.argv.slice(3).join(" ");
 
@@ -79,29 +79,32 @@ const movieThis = mediaInfo => {
 
 const concertThis = mediaInfo => {
   !mediaInfo
-    ? console.log(
-        "\nPlease enter the name of an artist you would like to search for.\n"
-      )
-    : axios
-        .get(
-          "https://rest.bandsintown.com/artists/" +
-            mediaInfo +
-            "/events?app_id=codingbootcamp"
-        )
+    ? (console.log(
+        "\nI see you didn't search for an artist's tour dates. Here's Bruno Mars's next 3 shows: \n"
+      ),
+      (mediaInfo = "Bruno Mars"))
+    : mediaInfo;
 
-        .then(function(response) {
-          let shows = response.data;
-          for (i = 0; i < 3; i++)
-            console.log(
-              "Venue: " +
-                shows[i].venue.name +
-                "\nLocation: " +
-                shows[i].venue.city +
-                "\nDate: " +
-                moment(shows[i].datetime).format("MM/DD/YYYY") +
-                "\n"
-            );
-        });
+  axios
+    .get(
+      "https://rest.bandsintown.com/artists/" +
+        mediaInfo +
+        "/events?app_id=codingbootcamp"
+    )
+
+    .then(function(response) {
+      let shows = response.data;
+      for (i = 0; i < 3; i++)
+        console.log(
+          "Venue: " +
+            shows[i].venue.name +
+            "\nLocation: " +
+            shows[i].venue.city +
+            "\nDate: " +
+            moment(shows[i].datetime).format("MM/DD/YYYY") +
+            "\n"
+        );
+    });
 };
 
 function spotifyThis(mediaInfo) {
