@@ -48,37 +48,39 @@ const liriStart = (command, mediaInfo) => {
 //   doWhatItSays();
 // }
 
-function movieThis() {
-  if (!searchTerm) {
-    searchTerm = "Mr Nobody";
+const movieThis = mediaInfo => {
+  if (!mediaInfo) {
+    mediaInfo = "Ghost Dog Way of the Samurai";
+    console.log(
+      "\nI see you didn't include a movie title. Here's my favorite movie:\n"
+    );
   }
   axios
     .get(
-      "http://www.omdbapi.com/?t=" +
-        searchTerm +
-        "&y=&plot=short&apikey=trilogy"
+      "http://www.omdbapi.com/?t=" + mediaInfo + "&y=&plot=short&apikey=trilogy"
     )
-    .then(function(response) {
+    .then(function(movie) {
+      let movie = response.data;
       console.log(
         "\nTitle: " +
-          response.data.Title +
+          movie.Title +
           "\nRelease Year: " +
-          response.data.Year +
+          movie.Year +
           "\nIMDB Rating: " +
-          response.data.imdbRating +
+          movie.imdbRating +
           "\nRotten Tomatoes Rating: " +
-          response.data.Ratings[1].Value +
+          movie.Ratings[1].Value +
           "\nLocation: " +
-          response.data.Country +
+          movie.Country +
           "\nLanguage: " +
-          response.data.Language +
+          movie.Language +
           "\nPlot: " +
-          response.data.Plot +
+          movie.Plot +
           "\nCast: " +
-          response.data.Actors
+          movie.Actors
       );
     });
-}
+};
 
 function concertThis() {
   axios
