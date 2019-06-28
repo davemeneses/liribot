@@ -27,7 +27,7 @@ const liriStart = (command, mediaInfo) => {
       spotifyThis(mediaInfo);
       break;
     case "do-what-it-says":
-      spotifyThis(mediaInfo);
+      doWhatItSays();
       break;
     default:
       console.log(
@@ -78,12 +78,12 @@ const movieThis = mediaInfo => {
 // condition ? value if true : value if false
 
 const concertThis = mediaInfo => {
-  !mediaInfo
-    ? (console.log(
-        "\nI see you didn't search for an artist's tour dates. Here's Bruno Mars's next 3 shows: \n"
-      ),
-      (mediaInfo = "Bruno Mars"))
-    : mediaInfo;
+  if (!mediaInfo) {
+    console.log(
+      "\nI see you didn't search for an artist's tour dates. Here's Bruno Mars's next 3 shows: \n"
+    ),
+      (mediaInfo = "Bruno Mars");
+  }
 
   axios
     .get(
@@ -94,6 +94,7 @@ const concertThis = mediaInfo => {
 
     .then(function(response) {
       let shows = response.data;
+      console.log("\n");
       for (i = 0; i < 3; i++)
         console.log(
           "Venue: " +
@@ -107,11 +108,14 @@ const concertThis = mediaInfo => {
     });
 };
 
-function spotifyThis(mediaInfo) {
-  !mediaInfo && (mediaInfo = "Good Day Nappy Roots"),
+const spotifyThis = mediaInfo => {
+  if (!mediaInfo) {
     console.log(
       "\nI see you didn't choose a song. Here's one of my favorites: \n"
-    );
+    ),
+      (mediaInfo = "Good Day Nappy Roots");
+  }
+
   // searchTerm.toString
 
   spotify.search({ type: "track", query: mediaInfo }, function(err, data) {
@@ -120,7 +124,7 @@ function spotifyThis(mediaInfo) {
     }
 
     console.log(
-      "Artist: " +
+      "\nArtist: " +
         data.tracks.items[0].artists[0].name +
         "\nSong: " +
         data.tracks.items[0].name +
@@ -133,19 +137,21 @@ function spotifyThis(mediaInfo) {
 
     // console.log(data.tracks.items[0]);
   });
-}
+};
 
 // condition ? value if true : value if false
 
 const doWhatItSays = () => {
-  fs.readFile("random.txt", "utf8", function(err, data) {
-    err && console.log("Error! " + err);
-
-    let randomThing = data.split(",");
-    mediaInfo = randomThing[1];
-    console.log("THE UNIVERSE GRANTS YOU -- \n");
-    spotifyThis(mediaInfo);
-  });
+  // fs.readFile("random.txt", "utf8", function(err, data) {
+  //   err && console.log("Error! " + err);
+  //   let randomThing = data.split(",");
+  //   mediaInfo = randomThing[1];
+  //   console.log("THE UNIVERSE GRANTS YOU: \n");
+  //   spotifyThis(mediaInfo);
+  // });
+  console.log("\nTHE UNIVERSE GRANTS YOU: ");
+  mediaInfo = "I Get Knocked Down";
+  spotifyThis(mediaInfo);
 };
 
 liriStart(command, mediaInfo);
