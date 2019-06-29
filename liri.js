@@ -5,15 +5,8 @@ const moment = require("moment");
 const Spotify = require("node-spotify-api");
 const axios = require("axios");
 const spotify = new Spotify(keys.spotify);
-
-// this saves what command the user is typing
 let command = process.argv[2];
-// this checks what information the user is providing.
 let mediaInfo = process.argv.slice(3).join(" ");
-
-// console.log(
-//   "\nACCEPTED COMMANDS: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
-// );
 
 const liriStart = (command, mediaInfo) => {
   switch (command) {
@@ -31,13 +24,20 @@ const liriStart = (command, mediaInfo) => {
       break;
     default:
       console.log(
-        "\nRecognized Commands: movie-this, concert-this, spotify-this-song, do-what-it-says\n"
+        "\nWelcome to Liri! Here are the commands that you can execute:\n \n 1) movie-this <option movie title>\n 2) concert-this <option artist name>\n 3) spotify-this-song <optional song title>\n 4) do-what-it-says\n"
       );
   }
 };
 
+let logInfo = mediaInfo => {
+  fs.appendFile("log.txt", JSON.stringify(mediaInfo) + " \n", err => {
+    if (err) return console.log(err);
+
+    console.log("log.txt was updated.");
+  });
+};
+
 const movieThis = mediaInfo => {
-  // condition ? value if true : value if false
   !mediaInfo
     ? (console.log(
         "\nI see you didn't include a movie to search. Here's my favorite movie:\n"
@@ -75,15 +75,13 @@ const movieThis = mediaInfo => {
     });
 };
 
-// condition ? value if true : value if false
-
 const concertThis = mediaInfo => {
-  if (!mediaInfo) {
-    console.log(
-      "\nI see you didn't search for an artist's tour dates. Here's Bruno Mars's next 3 shows: \n"
-    ),
-      (mediaInfo = "Bruno Mars");
-  }
+  !mediaInfo
+    ? (console.log(
+        "\nI see you didn't search for an artist's tour dates. Here's Pitbull's next 3 shows:\n"
+      ),
+      (mediaInfo = "Pitbull"))
+    : (mediaInfo, console.log(`\n${mediaInfo}'s next three shows:\n`));
 
   axios
     .get(
@@ -94,7 +92,6 @@ const concertThis = mediaInfo => {
 
     .then(function(response) {
       let shows = response.data;
-      console.log("\n");
       for (i = 0; i < 3; i++)
         console.log(
           "Venue: " +
@@ -109,14 +106,12 @@ const concertThis = mediaInfo => {
 };
 
 const spotifyThis = mediaInfo => {
-  if (!mediaInfo) {
-    console.log(
-      "\nI see you didn't choose a song. Here's one of my favorites: \n"
-    ),
-      (mediaInfo = "Good Day Nappy Roots");
-  }
-
-  // searchTerm.toString
+  !mediaInfo
+    ? (console.log(
+        "\nI see you didn't choose a song. Here's one of my favorites: \n"
+      ),
+      (mediaInfo = "Good Day Nappy Roots"))
+    : mediaInfo;
 
   spotify.search({ type: "track", query: mediaInfo }, function(err, data) {
     if (err) {
@@ -134,36 +129,16 @@ const spotifyThis = mediaInfo => {
         data.tracks.items[0].preview_url +
         "\n"
     );
-
-    // console.log(data.tracks.items[0]);
   });
 };
 
-// condition ? value if true : value if false
-
 const doWhatItSays = () => {
-  // fs.readFile("random.txt", "utf8", function(err, data) {
-  //   err && console.log("Error! " + err);
-  //   let randomThing = data.split(",");
-  //   mediaInfo = randomThing[1];
-  //   console.log("THE UNIVERSE GRANTS YOU: \n");
-  //   spotifyThis(mediaInfo);
-  // });
-  console.log("\nTHE UNIVERSE GRANTS YOU: ");
-  mediaInfo = "I Get Knocked Down";
-  spotifyThis(mediaInfo);
+  fs.readFile("random.txt", "utf8", function(err, data) {
+    let randomThing = data.split(",");
+    mediaInfo = randomThing[1];
+    console.log("\nTHE UNIVERSE GRANTS YOU: \n");
+    spotifyThis(mediaInfo);
+  });
 };
 
 liriStart(command, mediaInfo);
-
-// if (command == "movie-this" && userInput) {
-//   console.log("MOVIE: " + printed + "\n");
-//   movieThis();
-// } else if (command == "concert-this" && userInput) {
-//   console.log("ARTIST: " + printed + "\n");
-//   concertThis();
-// } else if (command == "spotify-this-song" && userInput) {
-//   spotifyThis();
-// } else if (command == "do-what-it-says" && userInput) {
-//   doWhatItSays();
-// }
